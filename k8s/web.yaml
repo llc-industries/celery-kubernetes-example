@@ -14,15 +14,14 @@ spec:
       labels:
         app: myproject
     spec:
-      # The sqlite3 database is shared through this volume
-      # It's not a good approach for production use since it is deleted when the pod goes down
       volumes:
       - name: tmp-database
         emptyDir: {}
       containers:
       - name: myproject
-        image: myproject:1
+        image: celery-app:latest
         imagePullPolicy: Never
+        command: ["python3", "main.py"]
         volumeMounts:
         - mountPath: /data
           name: tmp-database
@@ -34,8 +33,9 @@ spec:
         - name: CELERY_RESULT_BACKEND
           value: "rpc://"
       - name: consumer-small
-        image: consumer-small:1
+        image: celery-app:latest
         imagePullPolicy: Never
+        command: ["celery", "-A", "main.celery_app", "worker"]
         args:
           - "--queues"
           - "small_tasks"
