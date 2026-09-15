@@ -18,6 +18,18 @@ spec:
       - name: consumer-large
         image: consumer-large:1
         imagePullPolicy: Never
+        args:
+          - "--queues"
+          - "large_tasks"
+          - "--loglevel"
+          - "INFO"
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
         env:
         - name: CELERY_BROKER_URL
           value: "amqp://guest:guest@rabbitmq-service:5672"

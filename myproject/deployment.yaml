@@ -36,6 +36,11 @@ spec:
       - name: consumer-small
         image: consumer-small:1
         imagePullPolicy: Never
+        args:
+          - "--queues"
+          - "small_tasks"
+          - "--loglevel"
+          - "INFO"
         volumeMounts:
         - mountPath: /data
           name: tmp-database
