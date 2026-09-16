@@ -22,6 +22,9 @@ spec:
         image: celery-app:latest
         imagePullPolicy: Never
         command: ["python3", "main.py"]
+        ports:
+        - containerPort: 5000
+          name: http
         volumeMounts:
         - mountPath: /data
           name: tmp-database
@@ -32,22 +35,15 @@ spec:
           value: "amqp://guest:guest@rabbitmq-service:5672"
         - name: CELERY_RESULT_BACKEND
           value: "rpc://"
-      - name: consumer-small
-        image: celery-app:latest
-        imagePullPolicy: Never
-        command: ["celery", "-A", "main.celery_app", "worker"]
-        args:
-          - "--queues"
-          - "small_tasks"
-          - "--loglevel"
-          - "INFO"
-        volumeMounts:
-        - mountPath: /data
-          name: tmp-database
-        env:
-        - name: DATABASE_DIR
-          value: /data
-        - name: CELERY_BROKER_URL
-          value: "amqp://guest:guest@rabbitmq-service:5672"
-        - name: CELERY_RESULT_BACKEND
-          value: "rpc://"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myproject-service
+spec:
+  selector:
+    app: myproject
+  ports:
+  - port: 5000
+    targetPort: 5000
+    name: http

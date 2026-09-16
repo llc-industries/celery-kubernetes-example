@@ -1,32 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: consumer-large
+  name: celery-worker
   labels:
-    app: consumer-large
+    app: celery-worker
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: consumer-large
+      app: celery-worker
   template:
     metadata:
       labels:
-        app: consumer-large
+        app: celery-worker
     spec:
       containers:
-      - name: consumer-large
+      - name: celery-worker
         image: celery-app:latest
         imagePullPolicy: Never
         command: ["celery", "-A", "main.celery_app", "worker"]
         args:
           - "--queues"
-          - "large_tasks"
+          - "tasks"
           - "--loglevel"
           - "INFO"
         resources:
           requests:
-            cpu: "10m"
+            cpu: "250m"
             memory: "128Mi"
           limits:
             cpu: "500m"

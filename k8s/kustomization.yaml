@@ -4,4 +4,4 @@ kind: Kustomization
 resources:
  - rabbitmq.yaml
  - web.yaml
- - consumer-large.yaml
+ - worker.yaml
