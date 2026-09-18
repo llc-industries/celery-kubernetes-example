@@ -7,6 +7,12 @@ resources:
  - web.yaml
  - worker.yaml
 
+configMapGenerator:
+  - name: alloy-config
+    namespace: monitoring
+    files:
+      - configs/config.alloy
+
 helmCharts:
   - name: alloy
     repo: https://grafana.github.io/helm-charts
@@ -19,3 +25,9 @@ helmCharts:
     releaseName: loki
     namespace: monitoring
     valuesFile: values-loki.yaml
+
+  - name: grafana
+    repo: https://grafana.github.io/helm-charts
+    releaseName: grafana
+    namespace: monitoring
+    valuesFile: values-grafana.yaml
