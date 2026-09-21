@@ -6,12 +6,18 @@ resources:
  - rabbitmq.yaml
  - web.yaml
  - worker.yaml
+ - mimir.yaml
 
 configMapGenerator:
   - name: alloy-config
     namespace: monitoring
     files:
       - configs/config.alloy
+
+  - name: mimir-config
+    namespace: monitoring
+    files:
+      - configs/mimir.yaml
 
 helmCharts:
   - name: alloy

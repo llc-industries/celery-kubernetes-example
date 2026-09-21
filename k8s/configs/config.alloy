@@ -57,3 +57,49 @@ loki.write "endpoint" {
 	url = "http://loki:3100/loki/api/v1/push"
 	}
 }
+
+prometheus.remote_write "mimir" {
+	endpoint {
+		url = "http://mimir-service:8080/api/v1/push"
+	}
+}
+
+prometheus.scrape "rabbitmq" {
+	targets = [{
+		"__address__" = "rabbitmq-service.app.svc.cluster.local:15692",
+	}]
+	forward_to = [prometheus.remote_write.mimir.receiver]
+	scrape_interval = "10s"
+}
+
+discovery.kubernetes "nodes" {
+	role = "node"
+}
+
+discovery.relabel "cadvisor" {
+	targets = discovery.kubernetes.nodes.targets
+
+	rule {
+		action       = "replace"
+		replacement  = "/metrics/cadvisor"
+		target_label = "__metrics_path__"
+	}
+
+	rule {
+		action       = "replace"
+		replacement  = "https"
+		target_label = "__scheme__"
+	}
+}
+
+prometheus.scrape "cadvisor" {
+	targets           = discovery.relabel.cadvisor.output
+	forward_to        = [prometheus.remote_write.mimir.receiver]
+	bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+
+	tls_config {
+		insecure_skip_verify = true
+	}
+
+	scrape_interval = "10s"
+}
