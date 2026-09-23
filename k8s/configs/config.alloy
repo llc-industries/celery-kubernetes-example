@@ -103,3 +103,9 @@ prometheus.scrape "cadvisor" {
 
 	scrape_interval = "10s"
 }
+
+prometheus.scrape "ksm" {
+	targets = [{ "__address__" = "kube-state-metrics.monitoring.svc.cluster.local:8080" }]
+	forward_to      = [prometheus.remote_write.mimir.receiver]
+	scrape_interval = "15s"
+}
